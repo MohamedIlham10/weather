@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Weather Forecast App</title>
+    <style>
+        body {
+            font-family: arial, sans-serif;
+            text-align: center;
+            background-image: url("wheather.jpg");
+            background-repeat: no-repeat;
+            background-size: cover;
+        }
+
+        .container {
+            max-width: 400px;
+            margin: 100px auto;
+            padding: 20px;
+            border: 1px solid #ccc;
+            border-radius: 10px;
+            background-color: #668D94;
+        }
+
+        .head1 {
+            font-size: 50px;
+        }
+
+        input,
+        button {
+            padding: 10px;
+            margin-bottom: 10px;
+            width: 90%;
+            border: 3px solid #000;
+            border-radius: 5px;
+            height: 50px;
+            line-height: normal;
+            color: #282828;
+            display: block;
+            width: 100%;
+            box-sizing: border-box;
+            user-select: auto;
+            font-size: 16px;
+            padding: 0 6px;
+            padding-left: 12px;
+        }
+
+        input:focus,
+        button:focus {
+            border: 3px solid #4644bf;
+        }
+
+        button {
+            background-color: #4c86af;
+            color: white;
+            border: none;
+            border-radius: 5px;
+        }
+
+        button:hover {
+            cursor: pointer;
+            background-color: #6e45a0;
+        }
+    </style>
+</head>
+<body>
+    <div class="head1"><h1>Weather Forecast</h1></div>
+
+    <div class="container">
+        <input type="text" id="locationinput" placeholder="Enter a location">
+        <button onclick="getweather()">Get Forecast</button>
+        <div id="WeatherDisplay"></div>
+        <button onclick="sendSMS()">Send SMS</button>
+    </div>
+
+    <script>
+        function getweather() {
+            const apiKey = 'f4a8a418ee26cd78edb9b9cd7ea0829c';
+            const location = document.getElementById('locationinput').value;
+            const url = `https://api.openweathermap.org/data/2.5/weather?q=${location}&appid=${apiKey}&units=imperial`;
+
+            fetch(url)
+                .then(response => response.json())
+                .then(data => {
+                    const weatherDisplay = document.getElementById('WeatherDisplay');
+                    weatherDisplay.innerHTML = `
+                        <h2>${data.name}, ${data.sys.country}</h2>
+                        <p>Temperature: ${data.main.temp}°F</p>
+                        <p>Humidity: ${data.main.humidity}%</p>
+                        <p>Pressure: ${data.main.pressure}hPa</p>
+                        <p>Weather: ${data.weather[0].description}</p>
+                        <p>Wind speed: ${data.wind.speed} miles per hour</p>
+                        <p>Weather Id: ${data.id}</p>
+                        <p>Longitude: ${data.coord.lon}°</p>
+                        <p>Latitude: ${data.coord.lat}°</p>
+                    `;
+                })
+                .catch(error => console.log('Error: ', error));
+        }
+
+        function sendSMS() {
+            const username = 'mohamedilham';
+            const password = 'arllb435210ILHAM!';
+            const apiKey = '89749edd976d44b38a44cc957fe2e058-cac8d93f-ee63-4a9e-b899-e662e32c4673';
+
+            const to = +94722582605;//document.getElementById('phone_number').value; // Assuming the phone_number and message come from form inputs
+            const message = document.getElementById('message').value;
+
+            const url = 'https://dk9mp1.api.infobip.com/sms/2/text/single';
+            const senderID = 'YourSenderID';
+
+            const headers = new Headers();
+            headers.append('Authorization', 'Basic ' + btoa(`${username}:${password}`));
+            headers.append('Content-Type', 'application/json');
+            headers.append('x-api-key', apiKey);
+
+            const data = {
+                from: senderID,
+                to: to,
+                text: message
+            };
+
+            fetch(url, {
+                method: 'POST',
+                headers: headers,
+                body: JSON.stringify(data)
+            })
+                .then(response => response.json())
+                .then(result => {
+                    console.log('Message sent successfully!', result);
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                });
+        }
+    </script>
+</body>
+</html>
